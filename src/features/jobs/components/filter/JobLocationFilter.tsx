@@ -12,12 +12,12 @@ function CityComponent({
   regions,
   selectedCity,
   setSelectedCity,
-  setSelectedGu,
+  setSelectedDistrict,
 }: {
   regions: string[];
   selectedCity: string;
   setSelectedCity: (city: string) => void;
-  setSelectedGu: (gu: string) => void;
+  setSelectedDistrict: (gu: string) => void;
 }) {
   return (
     <div className="w-60 max-h-80 border-r overflow-y-auto p-2 scroll-auto">
@@ -27,7 +27,7 @@ function CityComponent({
           className={`p-2 cursor-pointer ${selectedCity === region ? "text-green-700 font-bold" : ""}`}
           onClick={() => {
             setSelectedCity(region);
-            setSelectedGu("");
+            setSelectedDistrict("");
           }}
         >
           {region} &rsaquo;
@@ -43,20 +43,20 @@ function CityComponent({
  */
 function DistrictComponent({
   guList,
-  selectedGu,
-  setSelectedGu,
+  selectedDistrict,
+  setSelectedDistrict,
 }: {
   guList: string[];
-  selectedGu: string;
-  setSelectedGu: (gu: string) => void;
+  selectedDistrict: string;
+  setSelectedDistrict: (gu: string) => void;
 }) {
   return (
     <div className="w-60 max-h-80 border-r overflow-y-auto p-2 scroll-auto">
       {guList.map((gu) => (
         <div
           key={gu}
-          className={`p-2 cursor-pointer ${selectedGu === gu ? "text-green-700 font-bold" : ""}`}
-          onClick={() => setSelectedGu(gu)}
+          className={`p-2 cursor-pointer ${selectedDistrict === gu ? "text-green-700 font-bold" : ""}`}
+          onClick={() => setSelectedDistrict(gu)}
         >
           {gu} &rsaquo;
         </div>
@@ -115,8 +115,8 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
     staleTime: 1000 * 60 * 5, // 5분 캐시
   });
 
-  const [selectedSiGunGu, setSelectedSiGunGu] = useState("서울특별시");
-  const [selectedGu, setSelectedGu] = useState("");
+  const [selectedCity, setSelectedCity] = useState("서울특별시");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [checkedDongs, setCheckedDongs] = useState<string[]>([]);
 
   const toggleDong = React.useCallback(
@@ -131,51 +131,55 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
         return;
       }
 
-      if (checkedDongs.includes(`${selectedGu} 전체`)) {
-        updated = [...checkedDongs.filter((d) => d !== `${selectedGu} 전체`), dong];
+      if (checkedDongs.includes(`${selectedDistrict} 전체`)) {
+        updated = [...checkedDongs.filter((d) => d !== `${selectedDistrict} 전체`), dong];
       } else {
         updated = isSelected ? checkedDongs.filter((d) => d !== dong) : [...checkedDongs, dong];
       }
 
       setCheckedDongs(updated);
     },
-    [checkedDongs, selectedGu],
+    [checkedDongs, selectedDistrict],
   );
 
   const [guList, setGuList] = useState<string[]>([]);
   const [dongList, setDongList] = useState<string[]>([]);
 
   React.useEffect(() => {
-    setGuList(Object.keys(regions[selectedSiGunGu] || {}));
-    setSelectedGu(""); // Reset selectedGu when selectedSiGunGu changes
-  }, [selectedSiGunGu, regions]);
+    setGuList(Object.keys(regions[selectedCity] || {}));
+    setSelectedDistrict(""); // Reset selectedDistrict when selectedCity changes
+  }, [selectedCity, regions]);
 
   React.useEffect(() => {
-    setDongList(selectedGu ? regions[selectedSiGunGu][selectedGu] || [] : []);
-  }, [selectedGu, selectedSiGunGu, regions]);
+    setDongList(selectedDistrict ? regions[selectedCity][selectedDistrict] || [] : []);
+  }, [selectedDistrict, selectedCity, regions]);
 
   if (isLoading) {
     return <div className="p-4">지역 정보를 불러오는 중...</div>;
   }
 
   return (
-    <div>
+    <>
       <div className="flex border border-b-0 bg-white overflow-hidden">
         {/* 시군구 */}
         <CityComponent
           regions={Object.keys(regions)}
-          selectedCity={selectedSiGunGu}
-          setSelectedCity={setSelectedSiGunGu}
-          setSelectedGu={setSelectedGu}
+          selectedCity={selectedCity}
+          setSelectedCity={setSelectedCity}
+          setSelectedDistrict={setSelectedDistrict}
         />
 
         {/* 구 */}
-        <DistrictComponent guList={guList} selectedGu={selectedGu} setSelectedGu={setSelectedGu} />
+        <DistrictComponent
+          guList={guList}
+          selectedDistrict={selectedDistrict}
+          setSelectedDistrict={setSelectedDistrict}
+        />
 
         {/* 동 */}
         <TownComponent dongList={dongList} checkedDongs={checkedDongs} toggleDong={toggleDong} />
       </div>
       <CloseButton open={open} setOpen={setOpen} />
-    </div>
+    </>
   );
 }
