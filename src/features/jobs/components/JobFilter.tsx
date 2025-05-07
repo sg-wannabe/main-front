@@ -85,9 +85,7 @@ export default function JobFilter() {
               검색하기
             </button>
           </div>
-          {showLocation && (
-            <FilterLocation setShowLocation={setShowLocation} showLocation={showLocation} />
-          )}
+          {showLocation && <FilterLocation setOpen={setShowLocation} open={showLocation} />}
           {showJobs && <FilterJobs setShowJobs={setShowJobs} showJobs={showJobs} />}
           {showOtherConditions && (
             <FilterOtherConditions
