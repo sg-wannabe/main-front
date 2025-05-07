@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
 import { filterApi } from "@/api/filter";
-import { useSelectedFilterStore } from "@/features/jobs/stores/job-filters/useSelectedFiltersStore";
+import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
+import { useQuery } from "@tanstack/react-query";
 import { FaCaretUp } from "react-icons/fa";
 
 export default function JobCategoryFilter({ setShowJobs, showJobs }) {

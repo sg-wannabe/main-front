@@ -1,9 +1,9 @@
 import { Heading } from "@/components/ui/Heading";
 import { FaCaretDown } from "react-icons/fa";
 
+import { useFilterTabStore } from "@/features/jobs/components/filter/stores/job-filters/useJobFilterTabsStore";
+import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
 import { useSearchJobs } from "@/features/jobs/hooks/useSearchJobs";
-import { useFilterTabStore } from "@/features/jobs/stores/job-filters/useJobFilterTabsStore";
-import { useSelectedFilterStore } from "@/features/jobs/stores/job-filters/useSelectedFiltersStore";
 import FilterJobs from "./filter/JobCategoryFilter";
 import FilterOtherConditions from "./filter/JobConditionsFilter";
 import FilterLocation from "./filter/JobLocationFilter";

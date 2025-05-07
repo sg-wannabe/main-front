@@ -1,6 +1,6 @@
 "use client";
 
-import { useSelectedFilterStore } from "@/features/jobs/stores/job-filters/useSelectedFiltersStore";
+import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
 import { formatFilterValue, formatWorkDays } from "@/utils/filters";
 import { FaCaretUp } from "react-icons/fa";
 

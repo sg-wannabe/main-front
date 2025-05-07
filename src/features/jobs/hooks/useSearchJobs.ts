@@ -1,4 +1,4 @@
-import { useSelectedFilterStore } from "@/features/jobs/stores/job-filters/useSelectedFiltersStore";
+import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";

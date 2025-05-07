@@ -4,7 +4,7 @@ import { Heading } from "@/components/ui/Heading";
 import {
   resetFilters,
   useSelectedFilterStore,
-} from "@/features/jobs/stores/job-filters/useSelectedFiltersStore";
+} from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
 
 import { IoMdRefresh } from "react-icons/io";
 
