@@ -1,23 +1,16 @@
 "use client";
 
 import { filterApi } from "@/api/filter";
-import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaCaretUp } from "react-icons/fa";
 
-export type SubCategory = {
-  id: string;
-  name: string;
-};
+interface JobLocationFilterProps {
+  open: boolean;
+  setOpen: (show: boolean) => void;
+}
 
-export type Category = {
-  id: string;
-  name: string;
-  children: SubCategory[];
-};
-
-export default function JobLocationFilter({ setShowLocation, showLocation }) {
+export default function JobLocationFilter({ open, setOpen }: JobLocationFilterProps) {
   const { data: regions = {}, isLoading } = useQuery({
     queryKey: ["regions"],
     queryFn: () => filterApi.getLocationList(),
@@ -28,14 +21,6 @@ export default function JobLocationFilter({ setShowLocation, showLocation }) {
   const [selectedGu, setSelectedGu] = useState("");
   const [checkedDongs, setCheckedDongs] = useState<string[]>([]);
 
-  const selectedFilters = useSelectedFilterStore((state) => state.selectedFilters);
-  const locationChecked = useSelectedFilterStore((state) => state.locationChecked);
-  const setLocationChecked = useSelectedFilterStore((state) => state.setLocationChecked);
-
-  useEffect(() => {
-    setCheckedDongs(locationChecked);
-  }, [locationChecked]);
-
   const toggleDong = (dong: string) => {
     const isSelected = checkedDongs.includes(dong);
     let updated: string[] = [];
@@ -43,15 +28,7 @@ export default function JobLocationFilter({ setShowLocation, showLocation }) {
     if (dong.endsWith("전체")) {
       updated = isSelected ? checkedDongs.filter((d) => d !== dong) : [dong];
       setCheckedDongs(updated);
-      setLocationChecked(updated);
-      const filters = selectedFilters.filter(
-        (f) => !f.startsWith(`${selectedSiGunGu}-${selectedGu}:`),
-      );
-      useSelectedFilterStore.setState({
-        selectedFilters: updated.length
-          ? [...filters, `${selectedSiGunGu}-${selectedGu}: ${dong}`]
-          : filters,
-      });
+
       return;
     }
 
@@ -62,14 +39,6 @@ export default function JobLocationFilter({ setShowLocation, showLocation }) {
     }
 
     setCheckedDongs(updated);
-    setLocationChecked(updated);
-    const label = `${selectedSiGunGu}-${selectedGu}: ${updated.join(", ")}`;
-    const filters = selectedFilters.filter(
-      (f) => !f.startsWith(`${selectedSiGunGu}-${selectedGu}:`),
-    );
-    useSelectedFilterStore.setState({
-      selectedFilters: updated.length ? [...filters, label] : filters,
-    });
   };
 
   const guList = Object.keys(regions[selectedSiGunGu] || {});
@@ -126,7 +95,7 @@ export default function JobLocationFilter({ setShowLocation, showLocation }) {
         </div>
       </div>
       <div className="border flex justify-center rounded-md rounded-t-none py-2">
-        <button className="flex items-center " onClick={() => setShowLocation(!showLocation)}>
+        <button className="flex items-center " onClick={() => setOpen(!open)}>
           닫기
           <span className="px-2">
             <FaCaretUp />
