@@ -67,11 +67,11 @@ function DistrictComponent({
 
 function TownComponent({
   dongList,
-  checkedDongs,
+  checkedTowns,
   toggleDong,
 }: {
   dongList: string[];
-  checkedDongs: string[];
+  checkedTowns: string[];
   toggleDong: (dong: string) => void;
 }) {
   return (
@@ -80,7 +80,7 @@ function TownComponent({
         <label key={dong} className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={checkedDongs.includes(dong)}
+            checked={checkedTowns.includes(dong)}
             onChange={() => toggleDong(dong)}
           />
           {dong}
@@ -117,29 +117,29 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
 
   const [selectedCity, setSelectedCity] = useState("서울특별시");
   const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [checkedDongs, setCheckedDongs] = useState<string[]>([]);
+  const [checkedTowns, setCheckedTowns] = useState<string[]>([]);
 
   const toggleDong = React.useCallback(
     (dong: string) => {
-      const isSelected = checkedDongs.includes(dong);
+      const isSelected = checkedTowns.includes(dong);
       let updated: string[] = [];
 
       if (dong.endsWith("전체")) {
-        updated = isSelected ? checkedDongs.filter((d) => d !== dong) : [dong];
-        setCheckedDongs(updated);
+        updated = isSelected ? checkedTowns.filter((d) => d !== dong) : [dong];
+        setCheckedTowns(updated);
 
         return;
       }
 
-      if (checkedDongs.includes(`${selectedDistrict} 전체`)) {
-        updated = [...checkedDongs.filter((d) => d !== `${selectedDistrict} 전체`), dong];
+      if (checkedTowns.includes(`${selectedDistrict} 전체`)) {
+        updated = [...checkedTowns.filter((d) => d !== `${selectedDistrict} 전체`), dong];
       } else {
-        updated = isSelected ? checkedDongs.filter((d) => d !== dong) : [...checkedDongs, dong];
+        updated = isSelected ? checkedTowns.filter((d) => d !== dong) : [...checkedTowns, dong];
       }
 
-      setCheckedDongs(updated);
+      setCheckedTowns(updated);
     },
-    [checkedDongs, selectedDistrict],
+    [checkedTowns, selectedDistrict],
   );
 
   const [guList, setGuList] = useState<string[]>([]);
@@ -177,7 +177,7 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
         />
 
         {/* 동 */}
-        <TownComponent dongList={dongList} checkedDongs={checkedDongs} toggleDong={toggleDong} />
+        <TownComponent dongList={dongList} checkedTowns={checkedTowns} toggleDong={toggleDong} />
       </div>
       <CloseButton open={open} setOpen={setOpen} />
     </>
