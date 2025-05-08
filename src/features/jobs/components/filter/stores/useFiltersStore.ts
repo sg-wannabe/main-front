@@ -35,19 +35,76 @@ interface JobCategoryFilterState {
   setJobCats: (jobCats: JobCat[]) => void;
 }
 
-const useFiltersStore = create<LocationFiltersState & JobCategoryFilterState>((set) => {
+export type EmploymentType = "정규직" | "계약직" | "무관";
+interface ConditionFilterState {
+  employmentType: EmploymentType;
+  setEmploymentType: (employmentType: EmploymentType) => void;
+}
+
+export type WorkExperienceType = "경력" | "무관";
+
+interface ConditionFilterState {
+  workExperiences: WorkExperienceType[];
+  setWorkExperiences: (workExperiences: WorkExperienceType[]) => void;
+}
+
+export type EducationType = "고졸" | "대졸이상" | "무관";
+
+interface ConditionFilterState {
+  educations: EducationType[];
+  setEducations: (educations: EducationType[]) => void;
+}
+
+export type DayType = "월" | "화" | "수" | "목" | "금" | "토" | "일";
+interface ConditionFilterState {
+  selectedDays: string[];
+  setSelectedDays: (selectedDays: string[]) => void;
+}
+
+interface ConditionFilterState {
+  dayNegotiable: boolean;
+  setDayNegotiable: (dayNegotiable: boolean) => void;
+}
+
+const useFiltersStore = create<
+  LocationFiltersState & JobCategoryFilterState & ConditionFilterState
+>((set) => {
   // Initialize the store with default values
   return {
+    // Location Filter
+    // 시.도, 시.군.구, 동
     city: undefined,
     setCity: (city: City) => set({ city }),
     district: undefined,
     setDistrict: (district: District) => set({ district }),
     towns: [],
     setTowns: (towns: HoleTown[]) => set({ towns }),
+    // Job Category Filter
+    // 대분류, 중분류
     cat: undefined,
     setCat: (category: Category) => set({ cat: category }),
     jobCats: [],
     setJobCats: (jobCats: JobCat[]) => set({ jobCats }),
+    //
+    // Condition Filter
+    // 고용형태
+    employmentType: "무관",
+    setEmploymentType: (employmentType: EmploymentType) => set({ employmentType }),
+
+    // 경력
+    workExperiences: [],
+    setWorkExperiences: (workExperiences: WorkExperienceType[]) => set({ workExperiences }),
+
+    // 학력
+    educations: [],
+    setEducations: (educations: EducationType[]) => set({ educations }),
+
+    // 요일
+    selectedDays: [],
+    setSelectedDays: (selectedDays: string[]) => set({ selectedDays }),
+    // 요일 협의
+    dayNegotiable: false,
+    setDayNegotiable: (dayNegotiable: boolean) => set({ dayNegotiable }),
   };
 });
 
