@@ -1,7 +1,7 @@
 "use client";
 
 import SelectedChips from "@/features/jobs/components/SelectedChips";
-import { useFilterTabStore } from "@/features/jobs/components/filter/stores/job-filters/useJobFilterTabsStore";
+import { useFilterTabStore } from "@/features/jobs/components/filter/stores/useJobFilterTabsStore";
 import { useEffect } from "react";
 import JobCard from "../../../../features/home/components/JobCard";
 import JobFilter from "../../../../features/jobs/components/JobFilter";
