@@ -11,6 +11,8 @@ export default function JobCategoryFilter({ setShowJobs, showJobs }) {
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["search-job"],
     queryFn: () => filterApi.getSearchJobList(),
+    staleTime: 1000 * 60 * 5,
+    // 5분 캐시
   });
 
   const {
