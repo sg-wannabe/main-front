@@ -4,7 +4,7 @@ import { City, District, filterApi, Town } from "@/api/filter";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaCaretUp } from "react-icons/fa";
-import useFiltersStore from "./stores/useFiltersStore";
+import useFiltersStore, { HoleTown } from "./stores/useFiltersStore";
 
 /**
  * 도,시 (경기도, 서울특별시 등) 컴포넌트
@@ -117,7 +117,7 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
 
   const [selectedCity, setSelectedCity] = useState<City>(city);
   const [selectedDistrict, setSelectedDistrict] = useState<District>(district);
-  const [checkedTowns, setCheckedTowns] = useState<Town[]>(towns);
+  const [checkedTowns, setCheckedTowns] = useState<HoleTown[]>(towns);
 
   /** 시.도 초기화 */
   React.useEffect(() => {
@@ -148,10 +148,22 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
   }, [selectedDistrict]);
 
   React.useEffect(() => {
-    if (checkedTowns.length > 0) {
+    // towns와 checkedTowns가 다를 때만 set
+    if (
+      towns.length !== checkedTowns.length ||
+      towns.some((t, i) => t.id !== checkedTowns[i]?.id)
+    ) {
+      setCheckedTowns(towns);
+    }
+  }, [towns]);
+
+  React.useEffect(() => {
+    // checkedTowns와 towns가 다를 때만 set
+    if (
+      checkedTowns.length !== towns.length ||
+      checkedTowns.some((t, i) => t.id !== towns[i]?.id)
+    ) {
       setTowns(checkedTowns);
-    } else {
-      setTowns([]);
     }
   }, [checkedTowns]);
 
@@ -196,7 +208,20 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
                 // 만약에 체크 되어있다면 체크 해제
                 return prev.filter((t) => t.id !== town.id);
               } else {
-                return [...prev, town];
+                return [
+                  ...prev,
+                  {
+                    ...town,
+                    district: {
+                      id: selectedDistrict?.id || "",
+                      name: selectedDistrict?.name || "",
+                    },
+                    city: {
+                      id: selectedCity?.id || "",
+                      name: selectedCity?.name || "",
+                    },
+                  },
+                ];
               }
             });
           }}
