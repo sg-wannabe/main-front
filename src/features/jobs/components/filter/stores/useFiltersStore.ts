@@ -8,13 +8,24 @@ export interface JobCat extends SubCategory {
   };
 }
 
+export interface HoleTown extends Town {
+  district: {
+    id: string;
+    name: string;
+  };
+  city: {
+    id: string;
+    name: string;
+  };
+}
+
 interface LocationFiltersState {
   city?: City;
   setCity: (city: City) => void;
   district?: District;
   setDistrict: (district: District) => void;
-  towns: Town[];
-  setTowns: (towns: Town[]) => void;
+  towns: HoleTown[];
+  setTowns: (towns: HoleTown[]) => void;
 }
 
 interface JobCategoryFilterState {
@@ -32,7 +43,7 @@ const useFiltersStore = create<LocationFiltersState & JobCategoryFilterState>((s
     district: undefined,
     setDistrict: (district: District) => set({ district }),
     towns: [],
-    setTowns: (towns: Town[]) => set({ towns }),
+    setTowns: (towns: HoleTown[]) => set({ towns }),
     cat: undefined,
     setCat: (category: Category) => set({ cat: category }),
     jobCats: [],
