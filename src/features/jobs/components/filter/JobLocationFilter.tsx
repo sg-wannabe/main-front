@@ -228,20 +228,6 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
         />
       </div>
       <CloseButton open={open} setOpen={setOpen} />
-      <div>
-        {checkedTowns.length > 0 ? (
-          <div className="flex flex-wrap gap-2 p-4">
-            {checkedTowns.map((town) => (
-              <div
-                key={town.id}
-                className="bg-gray-200 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold mr-2 mb-2"
-              >
-                {town.id}|{town.name}
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
     </>
   );
 }
