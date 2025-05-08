@@ -1,6 +1,4 @@
 import Script from "next/script";
-
-import Footer from "../components/Footer";
 import QueryProvider from "../components/providers/QueryProvider";
 import { FontSizeProvider } from "../hooks/useFontSize";
 import ClientLayout from "./ClientLayout";
@@ -36,7 +34,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main>{children}</main>
               <ConfirmModal />
             </ClientLayout>
-            <Footer />
           </FontSizeProvider>
         </QueryProvider>
       </body>
