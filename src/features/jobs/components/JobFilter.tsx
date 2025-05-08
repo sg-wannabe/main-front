@@ -24,7 +24,7 @@ export default function JobFilter() {
 
   const navBtnSelectedClassName = "border-primary font-bold text-primary";
   const towns = useFiltersStore((state) => state.towns);
-  const checkedJobs = useSelectedFilterStore((state) => state.checkedJobs);
+  const jobCats = useFiltersStore((state) => state.jobCats);
   const selectedDays = useSelectedFilterStore((state) => state.selectedDays);
   const dayNegotiable = useSelectedFilterStore((state) => state.dayNegotiable);
 
@@ -55,7 +55,7 @@ export default function JobFilter() {
               onClick={() => setShowJobs(!showJobs)}
             >
               직종
-              {checkedJobs.length > 0 && <span className="text-primary">{checkedJobs.length}</span>}
+              {jobCats.length > 0 && <span className="text-primary">{jobCats.length}</span>}
               <span className={`transition-transform duration-300 ${showJobs ? "rotate-180" : ""}`}>
                 <FaCaretDown />
               </span>
