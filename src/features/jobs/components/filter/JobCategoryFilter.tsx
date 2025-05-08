@@ -2,82 +2,35 @@
 
 import { useState } from "react";
 
-import { filterApi } from "@/api/filter";
-import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
+import { Category, filterApi, SubCategory } from "@/api/filter";
 import { useQuery } from "@tanstack/react-query";
 import { FaCaretUp } from "react-icons/fa";
 
 export default function JobCategoryFilter({ setShowJobs, showJobs }) {
-  const { checkedJobs, setCheckedJobs, addSelectedFilter, removeSelectedFilter } =
-    useSelectedFilterStore();
-  const [selectedCategory, setSelectedCategory] = useState("외식·음료");
-
-  const { data, isLoading } = useQuery({
+  const { data: categories, isLoading } = useQuery({
     queryKey: ["search-job"],
     queryFn: () => filterApi.getSearchJobList(),
   });
 
-  const jobCategories = data ?? [];
+  const [selectedCat, setSelected] = useState<Category>();
+  const [checkedSubCat, setCheckedSubCat] = useState<SubCategory[]>([]);
 
-  const selectedCategoryItem = jobCategories.find(category => category.name === selectedCategory);
-  const subCategories = selectedCategoryItem?.children ?? [];
-
-  const toggleCheck = (item: string) => {
-    const isSelected = checkedJobs.includes(item);
-
-    if (item.includes("전체")) {
-      const subItems = subCategories || [];
-
-      if (isSelected) {
-        setCheckedJobs([]);
-        removeSelectedFilter(item);
-      } else {
-        setCheckedJobs([item]);
-
-        // Remove all subItems from chips
-        subItems.forEach((sub) => {
-          removeSelectedFilter(sub.name);
-        });
-
-        // Add the '전체' item to chips
-        addSelectedFilter(item);
-      }
-
-      return;
-    }
-
-    const updated = isSelected
-      ? checkedJobs.filter((v) => v !== item)
-      : [...checkedJobs.filter((v) => !v.includes("전체")), item];
-
-    setCheckedJobs(updated);
-    useSelectedFilterStore.setState({ checkedJobs: updated });
-
-    if (isSelected) {
-      removeSelectedFilter(item);
-    } else {
-      addSelectedFilter(item);
-      checkedJobs.forEach((job) => {
-        if (job.includes("전체")) {
-          removeSelectedFilter(job);
-        }
-      });
-    }
-  };
+  if (isLoading) {
+    return <div className="p-4">불러오는 중...</div>;
+  }
 
   return (
-    <div>
+    <>
       <div className="flex border border-b-0  bg-white overflow-hidden">
         {/* 대분류*/}
         <div className="w-70 max-h-80 border-r overflow-y-auto p-2 scroll-auto">
-          {isLoading && <p>로딩중...</p>}
-          {jobCategories.map((category) => (
+          {categories.map((category) => (
             <div
               key={category.id}
               className={`p-2 cursor-pointer ${
-                selectedCategory === category.name ? "text-green-700 font-bold" : ""
+                selectedCat?.id === category.id ? "text-green-700 font-bold" : ""
               }`}
-              onClick={() => setSelectedCategory(category.name)}
+              onClick={() => setSelected(category)}
             >
               {category.name} &rsaquo;
             </div>
@@ -86,17 +39,24 @@ export default function JobCategoryFilter({ setShowJobs, showJobs }) {
 
         {/* 중분류 */}
         <div className="grid grid-col md:grid-cols-2 max-h-80 gap-x-2 gap-y-3 p-4 w-full h-full overflow-y-auto">
-          {subCategories.map((sub) => (
-            <label key={sub.id} className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                checked={checkedJobs.includes(sub.name)}
-                onChange={() => toggleCheck(sub.name)}
-                className="mt-1.5"
-              />
-              {sub.name}
-            </label>
-          ))}
+          {selectedCat &&
+            selectedCat.children.map((sub) => (
+              <label key={sub.id} className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  checked={checkedSubCat.some((cat) => cat.id === sub.id)}
+                  onChange={() => {
+                    if (checkedSubCat.some((cat) => cat.id === sub.id)) {
+                      setCheckedSubCat(checkedSubCat.filter((cat) => cat.id !== sub.id));
+                    } else {
+                      setCheckedSubCat([...checkedSubCat, sub]);
+                    }
+                  }}
+                  className="mt-1.5"
+                />
+                {sub.name}
+              </label>
+            ))}
         </div>
       </div>
       <div className="border flex justify-center rounded-md rounded-t-none py-2">
@@ -107,6 +67,14 @@ export default function JobCategoryFilter({ setShowJobs, showJobs }) {
           </span>
         </button>
       </div>
-    </div>
+      <div className="p-4">
+        <h3>선택된 중분류:</h3>
+        <ul>
+          {checkedSubCat.map((sub) => (
+            <li key={sub.id}>{sub.name}</li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
