@@ -8,31 +8,6 @@ import useFiltersStore, {
 } from "./stores/useFiltersStore";
 
 export default function JobConditionsFilter({ setShowOtherConditions, showOtherConditions }) {
-  // const {
-  //   selectedDays,
-  //   setSelectedDays,
-  //   dayNegotiable,
-  //   setDayNegotiable,
-  //   addSelectedFilter,
-  //   removeSelectedFilter,
-  //   selectedFilters,
-  // } = useSelectedFilterStore();
-
-  // const toggleDay = (day: string) => {
-  //   const currentDays = useSelectedFilterStore.getState().selectedDays;
-  //   const isSelected = currentDays.includes(day);
-  //   const updated = isSelected ? currentDays.filter((d) => d !== day) : [...currentDays, day];
-  //   setSelectedDays(updated);
-
-  //   const label = formatWorkDays(updated);
-  //   const filters = useSelectedFilterStore
-  //     .getState()
-  //     .selectedFilters.filter((f) => !f.startsWith("근무요일:"));
-  //   useSelectedFilterStore.setState({
-  //     selectedFilters: updated.length > 0 ? [...filters, label] : filters,
-  //   });
-  // };
-
   const {
     // 고용 형태
     employmentType,
@@ -174,11 +149,6 @@ export default function JobConditionsFilter({ setShowOtherConditions, showOtherC
           </span>
         </button>
       </div>
-      <div>employmentType: {employmentType}</div>
-      <div>workExperiences: {workExperiences.map((exp) => exp).join(", ")}</div>
-      <div>educations: {educations.map((edu) => edu).join(", ")}</div>
-      <div>selectedDays: {selectedDays.map((day) => day).join(", ")}</div>
-      <div>dayNegotiable: {dayNegotiable ? "Yes" : "No"}</div>
     </>
   );
 }

@@ -37,8 +37,8 @@ interface JobCategoryFilterState {
 
 export type EmploymentType = "정규직" | "계약직" | "무관";
 interface ConditionFilterState {
-  employmentType: EmploymentType;
-  setEmploymentType: (employmentType: EmploymentType) => void;
+  employmentType: EmploymentType | undefined;
+  setEmploymentType: (employmentType: EmploymentType | undefined) => void;
 }
 
 export type WorkExperienceType = "경력" | "무관";
@@ -88,8 +88,8 @@ const useFiltersStore = create<
     //
     // Condition Filter
     // 고용형태
-    employmentType: "무관",
-    setEmploymentType: (employmentType: EmploymentType) => set({ employmentType }),
+    employmentType: undefined,
+    setEmploymentType: (employmentType: EmploymentType | undefined) => set({ employmentType }),
 
     // 경력
     workExperiences: [],
