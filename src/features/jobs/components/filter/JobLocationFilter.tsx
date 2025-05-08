@@ -124,7 +124,7 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
     if (cities.length > 0 && !selectedCity) {
       setSelectedCity(cities[0]);
     }
-  }, [city, cities]);
+  }, [cities]);
 
   /** 시.군.구 선택 되었을때 */
   React.useEffect(() => {
