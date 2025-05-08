@@ -47,6 +47,26 @@ export default function JobCategoryFilter({ setShowJobs, showJobs }) {
     }
   }, [checkedSubCat]);
 
+  // jobCats가 변경될 때 checkedSubCat 동기화
+  React.useEffect(() => {
+    if (
+      jobCats.length !== checkedSubCat.length ||
+      jobCats.some((c, i) => c.id !== checkedSubCat[i]?.id)
+    ) {
+      setCheckedSubCat(jobCats);
+    }
+  }, [jobCats]);
+
+  // checkedSubCat이 변경될 때 jobCats 동기화
+  React.useEffect(() => {
+    if (
+      checkedSubCat.length !== jobCats.length ||
+      checkedSubCat.some((c, i) => c.id !== jobCats[i]?.id)
+    ) {
+      setJobCats(checkedSubCat);
+    }
+  }, [checkedSubCat]);
+
   if (isLoading) {
     return <div className="p-4">불러오는 중...</div>;
   }
@@ -101,14 +121,6 @@ export default function JobCategoryFilter({ setShowJobs, showJobs }) {
             <FaCaretUp />
           </span>
         </button>
-      </div>
-      <div className="p-4">
-        <h3>선택된 중분류:</h3>
-        <ul>
-          {checkedSubCat.map((sub) => (
-            <li key={sub.id}>{sub.name}</li>
-          ))}
-        </ul>
       </div>
     </>
   );
