@@ -4,6 +4,7 @@ import { City, District, filterApi, Town } from "@/api/filter";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaCaretUp } from "react-icons/fa";
+import useFiltersStore from "./stores/useFiltersStore";
 
 /**
  * 도,시 (경기도, 서울특별시 등) 컴포넌트
@@ -112,15 +113,47 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
     staleTime: 1000 * 60 * 5, // 5분 캐시
   });
 
-  const [selectedCity, setSelectedCity] = useState<City>();
-  const [selectedDistrict, setSelectedDistrict] = useState<District>();
-  const [checkedTowns, setCheckedTowns] = useState<Town[]>([]);
+  const { towns, setTowns, district, setDistrict, city, setCity } = useFiltersStore();
 
+  const [selectedCity, setSelectedCity] = useState<City>(city);
+  const [selectedDistrict, setSelectedDistrict] = useState<District>(district);
+  const [checkedTowns, setCheckedTowns] = useState<Town[]>(towns);
+
+  /** 시.도 초기화 */
   React.useEffect(() => {
-    if (cities.length > 0) {
+    if (cities.length > 0 && !selectedCity) {
       setSelectedCity(cities[0]);
     }
-  }, [cities]);
+  }, [city, cities]);
+
+  /** 시.군.구 선택 되었을때 */
+  React.useEffect(() => {
+    // 시.군.구가 선택되면 동을 초기화
+    setSelectedDistrict(undefined);
+    if (!selectedCity) return;
+    // store 에 저장
+    setCity(selectedCity);
+    // 시.군.구가 선택되면 동을 첫번째 걸루 초기화
+    if (selectedCity.districts.length > 0) {
+      setSelectedDistrict(selectedCity.districts[0]);
+    }
+  }, [selectedCity]);
+
+  /**
+   * 시.군.구가 선택 되었을때 스토어에 저장
+   */
+  React.useEffect(() => {
+    if (!selectedCity) return;
+    setDistrict(selectedDistrict);
+  }, [selectedDistrict]);
+
+  React.useEffect(() => {
+    if (checkedTowns.length > 0) {
+      setTowns(checkedTowns);
+    } else {
+      setTowns([]);
+    }
+  }, [checkedTowns]);
 
   if (isLoading) {
     return <div className="p-4">지역 정보를 불러오는 중...</div>;
@@ -157,8 +190,10 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
           checkedTowns={checkedTowns}
           onHandleTownClick={(town) => {
             setCheckedTowns((prev) => {
+              // 이미 체크되어있는지 확인
               const isChecked = prev.some((t) => t.id === town.id);
               if (isChecked) {
+                // 만약에 체크 되어있다면 체크 해제
                 return prev.filter((t) => t.id !== town.id);
               } else {
                 return [...prev, town];
