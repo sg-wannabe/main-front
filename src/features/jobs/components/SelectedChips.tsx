@@ -1,22 +1,59 @@
 "use client";
 
-import { Heading } from "@/components/ui/Heading";
-import {
-  resetFilters,
-  useSelectedFilterStore,
-} from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
+import useFiltersStore from "@/features/jobs/components/filter/stores/useFiltersStore";
 
 import { IoMdRefresh } from "react-icons/io";
+import { resetFilters } from "./filter/stores/job-filters/useSelectedFiltersStore";
 
 export default function SelectedChips() {
-  const { selectedFilters, removeSelectedFilter } = useSelectedFilterStore();
+  const { towns, setTowns, jobCats, setJobCats } = useFiltersStore();
 
-  if (selectedFilters.length === 0) return null;
+  // if (selectedFilters.length === 0) return null;
 
   return (
     <>
       <div className="flex flex-wrap gap-2 my-4">
-        {selectedFilters.map((filter, index) => (
+        {towns.length > 0 &&
+          towns.map((town) => (
+            <div
+              key={town.id}
+              className="flex items-center bg-gray-100 px-3 py-1 mb-3 rounded-full text-gray-700"
+            >
+              <span className="ml-1 text-sm">
+                {town.district.name} {town.name}
+              </span>
+              <button
+                onClick={() => {
+                  setTowns(towns.filter((t) => t.id !== town.id));
+                }}
+                className="ml-2 pb-1 text-gray-500 hover:font-bold hover:scale-105"
+                aria-label={`Remove ${town.name}`}
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        {jobCats.length > 0 &&
+          jobCats.map((cat) => (
+            <div
+              key={cat.id}
+              className="flex items-center bg-gray-100 px-3 py-1 mb-3 rounded-full text-gray-700"
+            >
+              <span className="ml-1 text-sm">
+                {cat.parent.name} {cat.name}
+              </span>
+              <button
+                onClick={() => {
+                  setJobCats(jobCats.filter((c) => c.id !== cat.id));
+                }}
+                className="ml-2 pb-1 text-gray-500 hover:font-bold hover:scale-105"
+                aria-label={`Remove ${cat.name}`}
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        {/* {selectedFilters.map((filter, index) => (
           <div
             key={`${filter}-${index}`}
             className="flex items-center bg-gray-100 px-3 py-1 mb-3 rounded-full text-gray-700"
@@ -77,7 +114,7 @@ export default function SelectedChips() {
               <Heading sizeOffset={2}> &times;</Heading>
             </button>
           </div>
-        ))}
+        ))} */}
       </div>
       <div className="flex justify-center gap-4 mt-4 mb-4">
         <button
