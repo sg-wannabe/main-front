@@ -1,6 +1,5 @@
 import { API_ENDPOINTS } from "@/constants/apiEndPoints";
 import { fetcher } from "@/lib/fetcher";
-import { useState } from "react";
 
 export type SearchJobRequest = {
   city?: string[];
@@ -15,21 +14,22 @@ export type SearchJobRequest = {
   job_keyword_sub?: string[];
 };
 
-export type RegionResponse = Record<string, Record<string, string[]>>;
-
-type Town = {
+export interface Town {
+  id: string;
   name: string;
-};
+}
 
-type District = {
+export interface District {
+  id: string;
   name: string;
   towns: Town[];
-};
+}
 
-type Region = {
+export interface City {
+  id: string;
   name: string;
   districts: District[];
-};
+}
 
 export type SubCategory = {
   id: string;
@@ -42,27 +42,11 @@ export type Category = {
   children: SubCategory[];
 };
 
-
-
 export const filterApi = {
   getSearchJobList: () => {
     return fetcher.get<Category[]>(API_ENDPOINTS.JOB_FILTER.CATEGORY);
   },
   getLocationList: async () => {
-    const raw = await fetcher.get<Region[]>(API_ENDPOINTS.JOB_FILTER.LOCATION);
-
-    const parsedRegions: RegionResponse = {};
-    raw.forEach((region) => {
-      const regionName = region.name;
-      parsedRegions[regionName] = {};
-
-      region.districts.forEach((district) => {
-        const districtName = district.name;
-        parsedRegions[regionName][districtName] = district.towns.map((town) => town.name);
-      });
-    });
-
-    return parsedRegions;
+    return await fetcher.get<City[]>(API_ENDPOINTS.JOB_FILTER.LOCATION);
   },
 };
-

@@ -1,6 +1,6 @@
 "use client";
 
-import { filterApi } from "@/api/filter";
+import { City, District, filterApi, Town } from "@/api/filter";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaCaretUp } from "react-icons/fa";
@@ -9,28 +9,25 @@ import { FaCaretUp } from "react-icons/fa";
  * 도,시 (경기도, 서울특별시 등) 컴포넌트
  */
 function CityComponent({
-  regions,
+  cities,
   selectedCity,
   setSelectedCity,
-  setSelectedDistrict,
 }: {
-  regions: string[];
-  selectedCity: string;
-  setSelectedCity: (city: string) => void;
-  setSelectedDistrict: (gu: string) => void;
+  cities: City[];
+  selectedCity?: City;
+  setSelectedCity: (city: City) => void;
 }) {
   return (
     <div className="w-60 max-h-80 border-r overflow-y-auto p-2 scroll-auto">
-      {regions.map((region) => (
+      {cities.map((city) => (
         <div
-          key={region}
-          className={`p-2 cursor-pointer ${selectedCity === region ? "text-green-700 font-bold" : ""}`}
+          key={city.id}
+          className={`p-2 cursor-pointer ${selectedCity?.id === city.id ? "text-green-700 font-bold" : ""}`}
           onClick={() => {
-            setSelectedCity(region);
-            setSelectedDistrict("");
+            setSelectedCity(city);
           }}
         >
-          {region} &rsaquo;
+          {city.name} &rsaquo;
         </div>
       ))}
     </div>
@@ -42,23 +39,23 @@ function CityComponent({
  * 추가적인 기능이 필요할 경우 구현할 수 있습니다.
  */
 function DistrictComponent({
-  guList,
+  districts,
   selectedDistrict,
   setSelectedDistrict,
 }: {
-  guList: string[];
-  selectedDistrict: string;
-  setSelectedDistrict: (gu: string) => void;
+  districts: District[];
+  selectedDistrict?: District;
+  setSelectedDistrict: (d: District) => void;
 }) {
   return (
     <div className="w-60 max-h-80 border-r overflow-y-auto p-2 scroll-auto">
-      {guList.map((gu) => (
+      {districts.map((d) => (
         <div
-          key={gu}
-          className={`p-2 cursor-pointer ${selectedDistrict === gu ? "text-green-700 font-bold" : ""}`}
-          onClick={() => setSelectedDistrict(gu)}
+          key={d.id}
+          className={`p-2 cursor-pointer ${selectedDistrict?.id === d.id ? "text-green-700 font-bold" : ""}`}
+          onClick={() => setSelectedDistrict(d)}
         >
-          {gu} &rsaquo;
+          {d.name} &rsaquo;
         </div>
       ))}
     </div>
@@ -66,24 +63,24 @@ function DistrictComponent({
 }
 
 function TownComponent({
-  dongList,
+  towns,
   checkedTowns,
-  toggleDong,
+  onHandleTownClick,
 }: {
-  dongList: string[];
-  checkedTowns: string[];
-  toggleDong: (dong: string) => void;
+  towns: Town[];
+  checkedTowns: Town[];
+  onHandleTownClick: (town: Town) => void;
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3 p-4 w-full max-h-80 h-full overflow-y-auto">
-      {dongList.map((dong) => (
-        <label key={dong} className="flex items-center gap-2">
+      {towns.map((dong) => (
+        <label key={dong.id} className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={checkedTowns.includes(dong)}
-            onChange={() => toggleDong(dong)}
+            checked={checkedTowns.some((town) => town.id === dong.id)}
+            onChange={() => onHandleTownClick(dong)}
           />
-          {dong}
+          {dong.name}
         </label>
       ))}
     </div>
@@ -109,50 +106,21 @@ interface JobLocationFilterProps {
 }
 
 export default function JobLocationFilter({ open, setOpen }: JobLocationFilterProps) {
-  const { data: regions = {}, isLoading } = useQuery({
-    queryKey: ["regions"],
+  const { data: cities = [], isLoading } = useQuery({
+    queryKey: ["cities"],
     queryFn: () => filterApi.getLocationList(),
     staleTime: 1000 * 60 * 5, // 5분 캐시
   });
 
-  const [selectedCity, setSelectedCity] = useState("서울특별시");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [checkedTowns, setCheckedTowns] = useState<string[]>([]);
-
-  const toggleDong = React.useCallback(
-    (dong: string) => {
-      const isSelected = checkedTowns.includes(dong);
-      let updated: string[] = [];
-
-      if (dong.endsWith("전체")) {
-        updated = isSelected ? checkedTowns.filter((d) => d !== dong) : [dong];
-        setCheckedTowns(updated);
-
-        return;
-      }
-
-      if (checkedTowns.includes(`${selectedDistrict} 전체`)) {
-        updated = [...checkedTowns.filter((d) => d !== `${selectedDistrict} 전체`), dong];
-      } else {
-        updated = isSelected ? checkedTowns.filter((d) => d !== dong) : [...checkedTowns, dong];
-      }
-
-      setCheckedTowns(updated);
-    },
-    [checkedTowns, selectedDistrict],
-  );
-
-  const [guList, setGuList] = useState<string[]>([]);
-  const [dongList, setDongList] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState<City>();
+  const [selectedDistrict, setSelectedDistrict] = useState<District>();
+  const [checkedTowns, setCheckedTowns] = useState<Town[]>([]);
 
   React.useEffect(() => {
-    setGuList(Object.keys(regions[selectedCity] || {}));
-    setSelectedDistrict(""); // Reset selectedDistrict when selectedCity changes
-  }, [selectedCity, regions]);
-
-  React.useEffect(() => {
-    setDongList(selectedDistrict ? regions[selectedCity][selectedDistrict] || [] : []);
-  }, [selectedDistrict, selectedCity, regions]);
+    if (cities.length > 0) {
+      setSelectedCity(cities[0]);
+    }
+  }, [cities]);
 
   if (isLoading) {
     return <div className="p-4">지역 정보를 불러오는 중...</div>;
@@ -163,23 +131,57 @@ export default function JobLocationFilter({ open, setOpen }: JobLocationFilterPr
       <div className="flex border border-b-0 bg-white overflow-hidden">
         {/* 시군구 */}
         <CityComponent
-          regions={Object.keys(regions)}
+          cities={cities}
           selectedCity={selectedCity}
           setSelectedCity={setSelectedCity}
-          setSelectedDistrict={setSelectedDistrict}
         />
 
         {/* 구 */}
         <DistrictComponent
-          guList={guList}
+          districts={selectedCity?.districts || []}
           selectedDistrict={selectedDistrict}
           setSelectedDistrict={setSelectedDistrict}
         />
 
         {/* 동 */}
-        <TownComponent dongList={dongList} checkedTowns={checkedTowns} toggleDong={toggleDong} />
+        <TownComponent
+          towns={
+            selectedDistrict
+              ? // [
+                //     { id: selectedDistrict.id, name: `${selectedDistrict.name} 전체` },
+                //     ...selectedDistrict.towns,
+                // ]
+                selectedDistrict.towns
+              : []
+          }
+          checkedTowns={checkedTowns}
+          onHandleTownClick={(town) => {
+            setCheckedTowns((prev) => {
+              const isChecked = prev.some((t) => t.id === town.id);
+              if (isChecked) {
+                return prev.filter((t) => t.id !== town.id);
+              } else {
+                return [...prev, town];
+              }
+            });
+          }}
+        />
       </div>
       <CloseButton open={open} setOpen={setOpen} />
+      <div>
+        {checkedTowns.length > 0 ? (
+          <div className="flex flex-wrap gap-2 p-4">
+            {checkedTowns.map((town) => (
+              <div
+                key={town.id}
+                className="bg-gray-200 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold mr-2 mb-2"
+              >
+                {town.id}|{town.name}
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
     </>
   );
 }
