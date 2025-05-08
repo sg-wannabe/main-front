@@ -1,7 +1,6 @@
 import { Heading } from "@/components/ui/Heading";
 import { FaCaretDown } from "react-icons/fa";
 
-import { useSelectedFilterStore } from "@/features/jobs/components/filter/stores/job-filters/useSelectedFiltersStore";
 import { useFilterTabStore } from "@/features/jobs/components/filter/stores/useJobFilterTabsStore";
 import { useSearchJobs } from "@/features/jobs/hooks/useSearchJobs";
 import FilterJobs from "./filter/JobCategoryFilter";
@@ -25,8 +24,8 @@ export default function JobFilter() {
   const navBtnSelectedClassName = "border-primary font-bold text-primary";
   const towns = useFiltersStore((state) => state.towns);
   const jobCats = useFiltersStore((state) => state.jobCats);
-  const selectedDays = useSelectedFilterStore((state) => state.selectedDays);
-  const dayNegotiable = useSelectedFilterStore((state) => state.dayNegotiable);
+  const selectedDays = useFiltersStore((state) => state.selectedDays);
+  const dayNegotiable = useFiltersStore((state) => state.dayNegotiable);
 
   const { result, isLoading, error, search } = useSearchJobs();
 

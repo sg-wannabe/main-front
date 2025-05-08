@@ -3,7 +3,6 @@
 import useFiltersStore from "@/features/jobs/components/filter/stores/useFiltersStore";
 
 import { IoMdRefresh } from "react-icons/io";
-import { resetFilters } from "./filter/stores/job-filters/useSelectedFiltersStore";
 
 export default function SelectedChips() {
   const { towns, setTowns, jobCats, setJobCats } = useFiltersStore();
