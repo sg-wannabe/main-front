@@ -1,22 +1,30 @@
-import { City, District, Town } from "@/api/filter";
+import { Category, City, District, SubCategory, Town } from "@/api/filter";
 import { create } from "zustand";
 
-interface FiltersState {
+export interface JobCat extends SubCategory {
+  parent: {
+    id: string;
+    name: string;
+  };
+}
+
+interface LocationFiltersState {
   city?: City;
   setCity: (city: City) => void;
-}
-
-interface FiltersState {
   district?: District;
   setDistrict: (district: District) => void;
-}
-
-interface FiltersState {
   towns: Town[];
   setTowns: (towns: Town[]) => void;
 }
 
-const useFiltersStore = create<FiltersState>((set) => {
+interface JobCategoryFilterState {
+  cat?: Category;
+  setCat: (category: Category) => void;
+  jobCats?: JobCat[];
+  setJobCats: (jobCats: JobCat[]) => void;
+}
+
+const useFiltersStore = create<LocationFiltersState & JobCategoryFilterState>((set) => {
   // Initialize the store with default values
   return {
     city: undefined,
@@ -25,6 +33,10 @@ const useFiltersStore = create<FiltersState>((set) => {
     setDistrict: (district: District) => set({ district }),
     towns: [],
     setTowns: (towns: Town[]) => set({ towns }),
+    cat: undefined,
+    setCat: (category: Category) => set({ cat: category }),
+    jobCats: [],
+    setJobCats: (jobCats: JobCat[]) => set({ jobCats }),
   };
 });
 

@@ -1,19 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
-import { Category, filterApi, SubCategory } from "@/api/filter";
+import { Category, filterApi } from "@/api/filter";
 import { useQuery } from "@tanstack/react-query";
 import { FaCaretUp } from "react-icons/fa";
+import useFiltersStore, { JobCat } from "./stores/useFiltersStore";
 
 export default function JobCategoryFilter({ setShowJobs, showJobs }) {
-  const { data: categories, isLoading } = useQuery({
+  const { data: categories = [], isLoading } = useQuery({
     queryKey: ["search-job"],
     queryFn: () => filterApi.getSearchJobList(),
   });
 
-  const [selectedCat, setSelected] = useState<Category>();
-  const [checkedSubCat, setCheckedSubCat] = useState<SubCategory[]>([]);
+  const {
+    // 대분류
+    cat,
+    setCat,
+    // 중분류
+    jobCats,
+    setJobCats,
+  } = useFiltersStore();
+
+  const [selectedCat, setSelected] = useState<Category>(cat);
+  const [checkedSubCat, setCheckedSubCat] = useState<JobCat[]>(jobCats ?? []);
+
+  // 대분류 초기화
+  React.useEffect(() => {
+    if (categories.length > 0 && !selectedCat) {
+      setSelected(categories[0]);
+    }
+  }, [categories]);
+
+  // 대분류 선택 되었을때 스토어에 저장
+  React.useEffect(() => {
+    if (!selectedCat) return;
+    setCat(selectedCat);
+  }, [selectedCat]);
+
+  // 중분류 선택 되었을때 스토어에 저장
+  React.useEffect(() => {
+    if (checkedSubCat.length > 0) {
+      setJobCats(checkedSubCat);
+    } else {
+      setJobCats([]);
+    }
+  }, [checkedSubCat]);
 
   if (isLoading) {
     return <div className="p-4">불러오는 중...</div>;
@@ -49,7 +81,10 @@ export default function JobCategoryFilter({ setShowJobs, showJobs }) {
                     if (checkedSubCat.some((cat) => cat.id === sub.id)) {
                       setCheckedSubCat(checkedSubCat.filter((cat) => cat.id !== sub.id));
                     } else {
-                      setCheckedSubCat([...checkedSubCat, sub]);
+                      setCheckedSubCat([
+                        ...checkedSubCat,
+                        { ...sub, parent: { id: selectedCat.id, name: selectedCat.name } },
+                      ]);
                     }
                   }}
                   className="mt-1.5"
